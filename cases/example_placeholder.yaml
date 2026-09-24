@@ -1,0 +1,126 @@
+# =============================================================================
+# EXAMPLE CASE -- PLACEHOLDER VALUES, NOT A THESIS CASE
+# =============================================================================
+# Every number below marked PLACEHOLDER is here to show the schema, not because
+# it is the value to use. Nothing in this file has been checked against the
+# reference publication, and no result produced from it belongs in the thesis
+# until each placeholder has been replaced with a value read off the source and
+# the reference files it names actually exist.
+#
+# Copy this file to start a real case; do not edit it in place.
+# Validate the schema at any time with:
+#
+#     poetry run pemfc1d-bench show-case cases/example_placeholder.yaml
+# =============================================================================
+
+name: example_placeholder
+description: >
+  Schema example only. Replace every PLACEHOLDER value before using this case
+  for anything.
+
+# Adapter to run; `pemfc1d-bench list-models` prints the registered names.
+model: pemfc1d
+
+# [V] cell voltages, strictly descending. The sweep continues from each
+# solution into the next, so it has to start at low current.
+# PLACEHOLDER: a real case states the sweep its reference was computed on.
+voltages: [0.95, 0.90, 0.85, 0.80, 0.75, 0.70, 0.65, 0.60]
+
+# [V] voltages at which spatial profiles are compared. Must be a subset of
+# `voltages`. PLACEHOLDER: pick the operating points the reference was exported
+# at -- typically one near open circuit, one in the ohmic region, one at high
+# current.
+profile_voltages: [0.90, 0.75, 0.60]
+
+# Numerical settings, kept apart from the physics: two runs of this case at
+# different tolerances are the same case, and that is the mesh-convergence check.
+solver:
+  tol: 1.0e-4         # solve_bvp tolerance
+  n_per_region: 11    # initial mesh points per layer; null leaves the library default
+  max_nodes: null     # refinement ceiling; null leaves the library default
+  n_dense: 201        # points per layer at which profiles are sampled
+
+# Overrides on pemfc_1d.Params, by parameter name. Anything omitted keeps the
+# library's own default, which already follows the reference publication -- so a
+# verification case should normally override *nothing* and let both codes run on
+# the same published parameter set.
+#
+# Names are checked against Params when the case runs; the derived fields
+# (Lsum, T_A, T_C, s_im, the channel mass fractions) are computed from the
+# others and cannot be set.
+params: {}
+  # PLACEHOLDER examples of the syntax, commented out on purpose:
+  # T_A_celsius: 70.0      # [degC] anode plate temperature
+  # T_C_celsius: 70.0      # [degC] cathode plate temperature
+  # P_A: 1.5e5             # [Pa] anode channel pressure
+  # P_C: 1.5e5             # [Pa] cathode channel pressure
+  # RH_A: 0.9              # [-] anode relative humidity
+  # RH_C: 0.9              # [-] cathode relative humidity
+  # L: [160.0e-6, 10.0e-6, 25.0e-6, 10.0e-6, 160.0e-6]   # [m] AGDL..CGDL
+
+# What this case is compared against.
+reference:
+  # TODO: export these two files from the MATLAB MMM1D reference implementation
+  # for exactly the sweep and parameters above, following the procedure in
+  # reference/matlab/README.md, then remove this TODO. Until the files exist,
+  # `verify` reports them as skipped and exits non-zero.
+  matlab_profiles:
+    path: reference/matlab/PLACEHOLDER_profiles.csv
+    source: >
+      PLACEHOLDER -- fill in the MMM1D revision, the script and the date the
+      export was produced, exactly as recorded in reference/matlab/README.md.
+    variables: []    # empty: compare every variable the file contains
+    layers: []       # empty: compare every layer the file contains
+
+  matlab_polarization:
+    path: reference/matlab/PLACEHOLDER_polarization.csv
+    source: >
+      PLACEHOLDER -- as above, for the polarization curve.
+    label: MATLAB MMM1D reference
+
+  # Published experimental curves, for benchmarking. Each needs a full citation:
+  # a curve with no source cannot be used in the thesis.
+  experimental: []
+    # - path: reference/experimental/PLACEHOLDER_author_year.csv
+    #   source: >
+    #     PLACEHOLDER -- full citation, plus which figure the points were
+    #     digitised from and how.
+    #   label: PLACEHOLDER Author (year), Fig. N
+
+# Verification tolerance: a point passes when
+#   |model - reference| <= atol + rtol * |reference|
+# PLACEHOLDER: these are round numbers, not values justified against the two
+# solvers' tolerances. Set them from the solver tolerance the reference was
+# computed at, and record the reasoning in the thesis.
+tolerance:
+  rtol: 1.0e-3
+  atol: 1.0e-8
+
+# Per-variable overrides, for quantities whose scale makes one global pair
+# unreasonable. PLACEHOLDER: the entries below illustrate the syntax.
+tolerance_overrides:
+  T:
+    rtol: 1.0e-4      # a temperature near 343 K needs no 1e-8 absolute floor
+    atol: 1.0e-3      # [K]
+  phi_e:
+    rtol: 1.0e-3
+    atol: 1.0e-6      # [V] the anode potential is pinned at zero
+  Pgas:
+    rtol: 1.0e-4
+    atol: 1.0e-1      # [Pa] against a pressure near 1.5e5 Pa
+
+# [A/cm^2] windows that benchmarking metrics are also reported over separately,
+# so that a single RMSE cannot hide which loss mechanism a model gets wrong.
+# TODO: these bounds depend on the cell and the conditions. Read them off the
+# measured curve being benchmarked against -- they are not properties of the
+# model and this harness does not guess them.
+loss_regions:
+  activation:
+    i_min: 0.0
+    i_max: 0.1        # PLACEHOLDER
+  ohmic:
+    i_min: 0.1        # PLACEHOLDER
+    i_max: 1.0        # PLACEHOLDER
+  mass_transport:
+    i_min: 1.0        # PLACEHOLDER
+    i_max: null       # to the end of the curve
