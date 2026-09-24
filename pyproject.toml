@@ -1,0 +1,53 @@
+[tool.poetry]
+name = "pemfc1d-benchmark"
+version = "0.1.0"
+description = "Verification and benchmarking harness for my 1D PEM fuel cell model."
+authors = ["Victor Constantin Cartsounis <vicartsounis@gmail.com>"]
+readme = "README.md"
+packages = [{ include = "pemfc1d_benchmark", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+# The solver under test. A path dependency while the two repositories are
+# developed side by side: an edit in ../1D-PEMFC-Model is picked up here
+# without a reinstall.
+#
+# Once a thesis run has to be reproducible, pin it to a tag instead and drop
+# the path form:
+#
+#   pemfc-1d = { git = "https://github.com/victorcartsounis/1D-PEMFC-Model.git", tag = "v0.3.0" }
+#
+# The distribution is named "1d-pemfc-model" upstream; the import package is
+# `pemfc_1d` either way.
+"1d-pemfc-model" = { path = "../1D-PEMFC-Model", develop = true }
+
+numpy = ">=1.26"
+scipy = ">=1.11"
+pandas = ">=2.2"
+matplotlib = ">=3.8"
+pyyaml = ">=6.0"
+pydantic = ">=2.7"
+typer = ">=0.12"
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.0"
+ruff = ">=0.5"
+
+[tool.poetry.scripts]
+pemfc1d-bench = "pemfc1d_benchmark.cli:app"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 88
+src = ["src", "tests"]
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

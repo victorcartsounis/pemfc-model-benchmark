@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.vscode/
+
+# Environments
+.venv/
+venv/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Generated outputs: everything under results/ is reproducible from a case
+# file plus a library version, so none of it is tracked.
+results/*
+!results/.gitkeep
+
+# OS
+.DS_Store
